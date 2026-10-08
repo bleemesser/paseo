@@ -1285,7 +1285,12 @@ const ChatAgentReadyContent = memo(function ChatAgentReadyContent({
         </View>
       ) : null}
 
-      <TimelineSyncStatus sync={timelineSync} toast={toast} onDismiss={dismiss} />
+      <TimelineSyncStatus
+        serverId={serverId}
+        sync={timelineSync}
+        toast={toast}
+        onDismiss={dismiss}
+      />
     </>
   );
 

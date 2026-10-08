@@ -253,6 +253,8 @@ export const es: TranslationResources = {
       notFound: "Agentno encontrado",
       failedToLoad: "No se pudo cargar el agente",
       reconnecting: "Reconectando al host",
+      reconnectingIn: "Reconectando al host en {{seconds}} s",
+      retry: "reintentar",
       updating: "Actualizando mensajes",
       timelineSyncFailed: "No se pudo actualizar el historial del agente.",
       timelineSyncRetrying: "Reintentando…",

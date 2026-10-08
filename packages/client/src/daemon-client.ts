@@ -1238,6 +1238,7 @@ export class DaemonClient {
   private connectTimeout: ReturnType<typeof setTimeout> | null = null;
   private pendingGenericTransportErrorTimeout: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempt = 0;
+  private nextReconnectAt: number | null = null;
   private shouldReconnect = true;
   private connectPromise: Promise<void> | null = null;
   private connectResolve: (() => void) | null = null;
@@ -1575,6 +1576,25 @@ export class DaemonClient {
       return;
     }
     void this.connect();
+  }
+
+  /** Return the epoch ms of the next scheduled retry, or null if none is waiting. */
+  getNextReconnectAt(): number | null {
+    return this.reconnectTimeout ? this.nextReconnectAt : null;
+  }
+
+  /** Abandon any in-flight attempt or backoff wait and connect now. */
+  reconnectNow(): void {
+    if (this.connectionState.status === "connecting") {
+      this.disposeTransport(1001, "Manual reconnect");
+      this.scheduleReconnect({
+        reason: "Manual reconnect",
+        event: "MANUAL_RECONNECT",
+        reasonCode: "manual_reconnect",
+      });
+    }
+    this.reconnectAttempt = 0;
+    this.ensureConnected({ verify: true });
   }
 
   private verifyConnection(): void {
@@ -6613,6 +6633,7 @@ export class DaemonClient {
     const maxDelay = this.config.reconnect?.maxDelayMs ?? DEFAULT_RECONNECT_MAX_DELAY_MS;
     const delay = Math.min(baseDelay * 2 ** attempt, maxDelay);
     this.reconnectAttempt = attempt + 1;
+    this.nextReconnectAt = Date.now() + delay;
     this.reconnectTimeout = setTimeout(() => {
       this.reconnectTimeout = null;
       if (!this.shouldReconnect) {

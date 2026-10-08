@@ -247,6 +247,8 @@ export const en = {
       notFound: "Agent not found",
       failedToLoad: "Failed to load agent",
       reconnecting: "Reconnecting to host",
+      reconnectingIn: "Reconnecting to host in {{seconds}}s",
+      retry: "retry",
       updating: "Updating messages",
       timelineSyncFailed: "Couldn't refresh agent history.",
       timelineSyncRetrying: "Retrying…",

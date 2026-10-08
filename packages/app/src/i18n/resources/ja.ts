@@ -253,6 +253,8 @@ export const ja: TranslationResources = {
       notFound: "エージェントが見つかりません",
       failedToLoad: "エージェントの読み込みに失敗しました",
       reconnecting: "ホストに再接続中",
+      reconnectingIn: "{{seconds}}秒後にホストへ再接続",
+      retry: "再試行",
       updating: "メッセージを更新中",
       timelineSyncFailed: "エージェントの履歴を更新できませんでした。",
       timelineSyncRetrying: "再試行しています…",

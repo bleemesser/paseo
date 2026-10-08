@@ -41,6 +41,7 @@ export interface ToastState {
   variant: ToastVariant;
   durationMs: number | null;
   testID?: string;
+  action?: { label: string; onPress: () => void };
 }
 
 export interface ToastApi {
@@ -240,7 +241,9 @@ function ToastCard({
 
   return (
     <Pressable
-      accessible={false}
+      accessible={toast.action !== undefined}
+      accessibilityRole={toast.action ? "button" : undefined}
+      onPress={toast.action?.onPress}
       onHoverIn={onHoverIn}
       onHoverOut={onHoverOut}
       style={[
@@ -254,6 +257,12 @@ function ToastCard({
       {typeof toast.content === "string" ? (
         <Text testID="app-toast-message" style={styles.message}>
           {toast.content}
+          {toast.action ? (
+            <>
+              {" · "}
+              <Text style={styles.action}>{toast.action.label}</Text>
+            </>
+          ) : null}
         </Text>
       ) : (
         <View testID="app-toast-message" style={styles.contentSlot}>
@@ -318,5 +327,8 @@ const styles = StyleSheet.create((theme) => ({
     color: theme.colors.foreground,
     fontSize: theme.fontSize.base,
     fontWeight: theme.fontWeight.normal,
+  },
+  action: {
+    textDecorationLine: "underline",
   },
 }));

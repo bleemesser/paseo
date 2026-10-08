@@ -254,6 +254,8 @@ export const fr: TranslationResources = {
       notFound: "Agent introuvable",
       failedToLoad: "Impossible de charger l’agent",
       reconnecting: "Reconnexion à l’hôte…",
+      reconnectingIn: "Reconnexion à l'hôte dans {{seconds}} s",
+      retry: "réessayer",
       updating: "Mise à jour des messages…",
       timelineSyncFailed: "Impossible d’actualiser l’historique de l’agent.",
       timelineSyncRetrying: "Nouvelle tentative…",

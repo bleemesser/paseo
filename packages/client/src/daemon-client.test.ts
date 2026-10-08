@@ -1282,6 +1282,52 @@ test("ensureConnected reconnects immediately without leaving the scheduled retry
   }
 });
 
+test("reconnectNow abandons a stalled connect attempt and starts a fresh one", async () => {
+  useHeartbeatClock();
+  try {
+    const first = createMockTransport();
+    const stalled = createMockTransport();
+    const fresh = createMockTransport();
+    const transports = [first, stalled, fresh];
+    let transportIndex = 0;
+    const client = new DaemonClient({
+      url: "ws://test",
+      clientId: "clsk_manual_reconnect",
+      reconnect: { enabled: true, baseDelayMs: 1_500, maxDelayMs: 30_000 },
+      transportFactory: () => {
+        const transport = transports[transportIndex];
+        if (!transport) throw new Error("unexpected extra reconnect");
+        transportIndex += 1;
+        return transport.transport;
+      },
+    });
+    clients.push(client);
+
+    const initialConnect = client.connect();
+    first.triggerOpen();
+    await initialConnect;
+    first.triggerClose({ code: 1001, reason: "network lost" });
+    expect(client.getNextReconnectAt()).toBe(Date.now() + 1_500);
+    client.ensureConnected();
+    expect(client.getConnectionState().status).toBe("connecting");
+    expect(client.getNextReconnectAt()).toBeNull();
+    expect(transportIndex).toBe(2);
+
+    client.reconnectNow();
+    expect(client.getConnectionState().status).toBe("connecting");
+    expect(transportIndex).toBe(3);
+
+    fresh.triggerOpen();
+    expect(client.getConnectionState().status).toBe("connected");
+    await vi.advanceTimersByTimeAsync(30_000);
+
+    expect(client.getConnectionState().status).toBe("connected");
+    expect(transportIndex).toBe(3);
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
 test("connect during a scheduled retry reconnects immediately without leaving the retry armed", async () => {
   useHeartbeatClock();
   try {

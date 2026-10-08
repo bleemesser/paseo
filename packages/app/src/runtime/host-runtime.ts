@@ -774,6 +774,14 @@ export class HostRuntimeController {
     this.activeClient?.ensureConnected(options);
   }
 
+  reconnectNow(): void {
+    this.activeClient?.reconnectNow();
+  }
+
+  getNextReconnectAt(): number | null {
+    return this.activeClient?.getNextReconnectAt() ?? null;
+  }
+
   markAgentDirectorySyncLoading(): void {
     const status = this.snapshot.hasEverLoadedAgentDirectory ? "revalidating" : "initial_loading";
     this.updateSnapshot({
@@ -2556,6 +2564,16 @@ export class HostRuntimeStore {
     for (const controller of this.controllers.values()) {
       controller.ensureConnected(options);
     }
+  }
+
+  /** Skip the reconnect backoff for one host and connect immediately. */
+  reconnectNow(serverId: string): void {
+    this.controllers.get(serverId)?.reconnectNow();
+  }
+
+  /** Return when the host's next automatic reconnect fires, or null if none is waiting. */
+  getNextReconnectAt(serverId: string): number | null {
+    return this.controllers.get(serverId)?.getNextReconnectAt() ?? null;
   }
 
   setAppVisible(visible: boolean): void {

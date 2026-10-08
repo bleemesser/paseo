@@ -252,6 +252,8 @@ export const ptBR: TranslationResources = {
       notFound: "Agente não encontrado",
       failedToLoad: "Falha ao carregar agente",
       reconnecting: "Reconectando ao host",
+      reconnectingIn: "Reconectando ao host em {{seconds}}s",
+      retry: "tentar novamente",
       updating: "Atualizando mensagens",
       timelineSyncFailed: "Não foi possível atualizar o histórico do agente.",
       timelineSyncRetrying: "Tentando novamente…",
